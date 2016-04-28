@@ -28,8 +28,10 @@ PCATEGORY=${PV[0]}
 PNAMEVER=${PV[1]}
 # split the package name and its version
 IFS='-' read -a PV <<< "$PNAMEVER"
-PNAME=${PV[0]}
-PVERSION=${PV[1]}
+l=${#PV[@]}
+PVERSION=${PV[l-1]}
+unset PV[${#PV[@]}-1]
+PNAME=$(IFS=- ; echo "${PV[*]}")
 
 PROOT=$BUILD_ROOT/$PCATEGORY/$PNAMEVER
 # directory where the package sources are
