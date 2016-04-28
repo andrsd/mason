@@ -1,5 +1,5 @@
 do_download() {
-  curl -O $URI || exit 2
+  curl -L -O $URI || exit 2
 }
 
 do_unpack() {
