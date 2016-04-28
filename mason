@@ -1,0 +1,109 @@
+#!/bin/bash
+#
+
+
+### setup global variables ###
+
+BUILD_ROOT=/tmp/mason
+MASON_ROOT=`pwd`
+# where the packages are installed
+PACKAGE_HOME=~/packages
+# where the build "scripts" are located
+PACKAGE_SOURCES="$MASON_ROOT/packages/mason-base"
+# where the distrubution files are
+DISTFILES=~/distfiles
+JOBS=4
+
+# load the user environment to override our defaults
+if [ -f ~/.mason/conf ] ; then
+  source ~/.mason/conf
+fi
+
+# load the standard functions
+source basic-functions.sh
+
+# split the category and package name
+IFS='/' read -a PV <<< "$1"
+PCATEGORY=${PV[0]}
+PNAMEVER=${PV[1]}
+# split the package name and its version
+IFS='-' read -a PV <<< "$PNAMEVER"
+PNAME=${PV[0]}
+PVERSION=${PV[1]}
+
+PROOT=$BUILD_ROOT/$PCATEGORY/$PNAMEVER
+# directory where the package sources are
+PSRC=$PROOT/src/$PNAMEVER
+# directory where we build the package
+PBUILD=$PROOT/build
+# directory where we install the package
+PIDIR=$PACKAGE_HOME/$PNAME/$PVERSION
+if [ ! -z $ARCH ] ; then
+  PIDIR=$PIDIR/$ARCH
+  PBUILD=$PROOT/build/$ARCH
+fi
+
+# load the package "script"
+HAVE_PACKAGE=0
+for d in $PACKAGE_SOURCES; do
+  if [ -f $d/$PCATEGORY/$PNAME/$PNAMEVER ] ; then
+    HAVE_PACKAGE=1
+    source $d/$PCATEGORY/$PNAME/$PNAMEVER
+    # where files we distribute with the packe are
+    FILES=$d/$PCATEGORY/$PNAME/files
+    break
+  fi
+done
+
+if [ $HAVE_PACKAGE == 0 ] ; then
+  echo "Could not find package $1"
+  exit 1
+fi
+
+if [ ! -z $URI ] ; then
+  # figure out package file name
+  IFS='/' read -a PV <<< "$URI"
+  FILE_NAME=${PV[${#PV[@]}-1]}
+fi
+
+case $2 in
+  download)
+  echo "*** Download $1..."
+  core_download
+  ;;
+
+  unpack)
+  echo "*** Unpack $1..."
+  core_unpack
+  ;;
+
+  configure)
+  echo "*** Configure $1..."
+  core_configure
+  ;;
+
+  make)
+  echo "*** Build $1..."
+  core_make
+  ;;
+
+  install)
+  echo "*** Install $1..."
+  core_install
+  ;;
+
+  postinstall)
+  echo "*** Post install $1..."
+  core_postinstall
+  ;;
+
+  *)
+  echo "*** Building $1..."
+  core_download
+  core_unpack
+  core_configure
+  core_make
+  core_install
+  core_postinstall
+  ;;
+esac
