@@ -4,7 +4,7 @@ do_download() {
 
 do_unpack() {
   echo "*** Unpacking..."
-  tar -xzf $DISTFILES/$FILE_NAME -C $PROOT/src
+  tar xf $DISTFILES/$FILE_NAME -C $PROOT/src
 }
 
 do_make() {
