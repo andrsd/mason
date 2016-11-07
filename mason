@@ -4,7 +4,7 @@
 
 ### setup global variables ###
 
-BUILD_ROOT=/tmp/mason
+BUILD_ROOT=/private/tmp/mason
 MASON_ROOT=`pwd`
 # where the packages are installed
 PACKAGE_HOME=~/packages
