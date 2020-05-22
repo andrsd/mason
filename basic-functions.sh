@@ -3,34 +3,22 @@ do_download() {
 }
 
 do_unpack() {
-  echo "*** Unpacking..."
   tar xf $DISTFILES/$FILE_NAME -C $PROOT/src
 }
 
-do_make() {
-  echo "*** Now, building..."
-  make -j$JOBS
-}
-
 do_configure() {
-  echo "*** Configuring... --prefix="$PIDIR $MCONF
   CFLAGS=$CFLAGS \
-    CXXFLAGS=$CXXFLAGS \
-    FCFLAGS=$FCFLAGS \
-    F90FLAGS=$F90FLAGS \
-    F77FLAGS=$F77FLAGS \
-    $PSRC/configure --prefix=$PIDIR $MCONF || exit 1
+  CXXFLAGS=$CXXFLAGS \
+  FCFLAGS=$FCFLAGS \
+  F90FLAGS=$F90FLAGS \
+  F77FLAGS=$F77FLAGS \
+  $PSRC/configure $MCONF || exit 1
 }
 
-do_install() {
-  echo "*** And, installing..."
-  make install
+do_cmake() {
+  cmake $PSRC \
+    -DCMAKE_INSTALL_PREFIX=$PIDIR $MCMAKE || exit 1
 }
-
-do_postinstall() {
-  :
-}
-
 
 mdownload() {
   do_download
@@ -41,25 +29,25 @@ munpack() {
 }
 
 mconfigure() {
-  :
+  MCONF="--prefix=$PIDIR"
 }
 
 mmake() {
-  do_make
+  make -j$JOBS
 }
 
 minstall() {
-  do_install
+  make install
 }
 
 mpostinstall() {
-  do_postinstall
+  :
 }
 
 # Core functions
 core_download() {
+  echo "*** Downloading..."
   if [ ! -z $URI ] ; then
-    # download
     mkdir -p $DISTFILES
     if [ -f $DISTFILES/$FILE_NAME ] ; then
       echo "*** Distribution file in place, skipping download..."
@@ -71,7 +59,7 @@ core_download() {
 }
 
 core_unpack() {
-  # unpack
+  echo "*** Unpacking..."
   rm -rf $PROOT/src
   mkdir -p $PROOT/src
   cd $PROOT/src
@@ -79,27 +67,31 @@ core_unpack() {
 }
 
 core_configure() {
-  # make dir for build
   mkdir -p $PBUILD
   cd $PBUILD
-  # configure
-  MCONF=''
   mconfigure
-  do_configure
+  if [[ ! -z $MCONF ]] ; then
+    echo "*** Configuring..."
+    do_configure
+  elif [[ ! -z $MCMAKE ]] ; then
+    echo "*** CMaking..."
+    do_cmake
+  fi
 }
 
 core_make() {
-  # make
+  echo "*** Building..."
   cd $PBUILD
   mmake || exit 4
 }
 
 core_install() {
-  # install
+  echo "*** Installing..."
   cd $PBUILD
   minstall || exit 5
 }
 
 core_postinstall() {
+  echo "*** Post install..."
   mpostinstall || exit 7
 }

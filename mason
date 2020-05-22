@@ -70,37 +70,30 @@ fi
 
 case $2 in
   download)
-  echo "*** Download $1..."
   core_download
   ;;
 
   unpack)
-  echo "*** Unpack $1..."
   core_unpack
   ;;
 
   configure)
-  echo "*** Configure $1..."
   core_configure
   ;;
 
   make)
-  echo "*** Build $1..."
   core_make
   ;;
 
   install)
-  echo "*** Install $1..."
   core_install
   ;;
 
   postinstall)
-  echo "*** Post install $1..."
   core_postinstall
   ;;
 
   *)
-  echo "*** Building $1..."
   core_download
   core_unpack
   core_configure
