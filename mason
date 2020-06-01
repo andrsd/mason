@@ -38,12 +38,6 @@ PROOT=$BUILD_ROOT/$PCATEGORY/$PNAMEVER
 PSRC=$PROOT/src/$PNAMEVER
 # directory where we build the package
 PBUILD=$PROOT/build
-# directory where we install the package
-PIDIR=$PACKAGE_HOME/$PNAME/$PVERSION
-if [ ! -z $ARCH ] ; then
-  PIDIR=$PIDIR/$ARCH
-  PBUILD=$PROOT/build/$ARCH
-fi
 
 # load the package "script"
 HAVE_PACKAGE=0
