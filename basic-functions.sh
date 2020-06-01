@@ -12,7 +12,7 @@ do_configure() {
   FCFLAGS=$FCFLAGS \
   F90FLAGS=$F90FLAGS \
   F77FLAGS=$F77FLAGS \
-  $PSRC/configure $MCONF || exit 1
+  $PSRC/configure --prefix=$PIDIR $MCONF || exit 1
 }
 
 do_cmake() {
@@ -29,7 +29,7 @@ munpack() {
 }
 
 mconfigure() {
-  MCONF="--prefix=$PIDIR"
+  MCONF=' '
 }
 
 mmake() {
